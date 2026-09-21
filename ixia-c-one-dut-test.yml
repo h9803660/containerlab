@@ -1,0 +1,16 @@
+name: ixia-c-one-dut-test
+
+topology:
+  nodes:
+    ixia-c:
+      kind: keysight_ixia-c-one
+      image: ghcr.io/open-traffic-generator/ixia-c-one:1.55.0-1
+
+    ceos:
+      kind: arista_ceos
+      image: ceos:4.34.6M
+      startup-config: ceos.cfg
+
+  links:
+    - endpoints: ["ixia-c:eth1", "ceos:eth1"]
+    - endpoints: ["ixia-c:eth2", "ceos:eth2"]

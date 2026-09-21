@@ -1,0 +1,24 @@
+# Only this lab's source topology and startup configuration
+/*.yml
+!/ixia-c-one-dut-test.yml
+/*.cfg
+!/ceos.cfg
+
+# containerlab runtime directories; retain this lab's report and rate sweep
+/clab-*/
+!/clab-ixia-c-one-dut-test/
+/clab-ixia-c-one-dut-test/*
+!/clab-ixia-c-one-dut-test/TEST_REPORT.md
+!/clab-ixia-c-one-dut-test/rate-sweep/
+
+# Credentials and Python-generated files
+**/.tls/
+**/*.key
+**/*.crt
+**/*.pem
+**/authorized_keys
+**/__pycache__/
+*.py[cod]
+**/.pytest_cache/
+**/.venv/
+**/.env/
