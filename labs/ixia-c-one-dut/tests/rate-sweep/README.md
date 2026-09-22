@@ -7,7 +7,7 @@
 | `ixia_rate_sweep.py` | 1%、2%、5%を各10秒・双方向 UDP で実施 | フローごとの Tx/Rx、cEOS Ethernet1/2 の InDiscards 前後差 |
 | `ixia_low_rate_sweep.py` | 0.1%、0.2%、0.5%を同条件で実施 | 上記に加え Etba CPU time 前後差、送信中の Etba とコンテナ CPU サンプル |
 
-どちらもリポジトリ内の `tests/clab-device-endpoint.py` を読み取り、レート指定だけをメモリ上で置換して実行する。元ファイルへの書き込みはしない。`snappi` を利用できる Python 環境が必要。結果は標準出力の JSON に出力し、実測値は `TEST_REPORT.md` に転記している。
+どちらもリポジトリ内の `../clab-device-endpoint.py` を読み取り、レート指定だけをメモリ上で置換して実行する。元ファイルへの書き込みはしない。`snappi` を利用できる Python 環境が必要。結果は標準出力の JSON に出力し、実測値は `TEST_REPORT.md` に転記している。
 
 ## 実行時の注意
 

@@ -9,7 +9,7 @@ import time
 
 import snappi
 
-SOURCE = str(Path(__file__).resolve().parents[2] / 'tests' / 'clab-device-endpoint.py')
+SOURCE = str(Path(__file__).resolve().parents[1] / 'clab-device-endpoint.py')
 API = 'https://clab-ixia-c-one-dut-test-ixia-c:8443'
 NAMES = ['Device1_to_Device2', 'Device2_to_Device1']
 CEOS = 'clab-ixia-c-one-dut-test-ceos'

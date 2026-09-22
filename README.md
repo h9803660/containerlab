@@ -1,41 +1,25 @@
-# ixia-c + cEOS 検証環境
+# containerlab 検証集
 
-containerlab で ixia-c one と Arista cEOSLab を起動し、cEOS を経由する双方向 UDP トラフィックを snappi で検証する環境です。
+ixia-c、cEOS などを使う containerlab 検証環境を、試験ごとに `labs/` 配下で管理します。各 lab に topology、元の機器設定、Python 試験、結果レポートをまとめます。
 
-## Topology
+## 登録済みの試験
 
-[Topology 定義](ixia-c-one-dut-test.yml)は ixia-c と cEOS をそれぞれ1台使用し、2本のデータリンクで直結します。cEOS の起動設定の原本は [ceos.cfg](ceos.cfg) です。
+| Lab | 内容 |
+|---|---|
+| [ixia-c-one-dut](labs/ixia-c-one-dut/README.md) | ixia-c から cEOS 1台を経由する双方向 UDP と転送性能の検証 |
+
+## ディレクトリ方針
 
 ```text
-ixia-c eth1 (10.1.0.1/24) ── cEOS Ethernet1 (10.1.0.254/24)
-ixia-c eth2 (10.2.0.1/24) ── cEOS Ethernet2 (10.2.0.254/24)
+labs/<lab-name>/
+├── README.md
+├── <topology>.yml
+├── <device-startup-config>.cfg
+├── TEST_REPORT.md
+├── tests/
+└── clab-<topology-name>/   # containerlab の実行時生成物。Git 管理対象外
 ```
 
-cEOS は Ethernet1 と Ethernet2 の間で IPv4 をルーティングします。管理 IP は deploy 時に割り当てられるため、固定値を前提にせず `containerlab inspect` で確認してください。
+新しい試験は `labs/<lab-name>/` に追加します。`clab-*`、証明書・秘密鍵、ログ、Python cache は `.gitignore` で除外します。起動・試験コマンドと注意点は各 lab の README を参照してください。
 
-## 起動と状態確認
-
-WSL ローカル Docker Engine に接続した状態で、リポジトリのルートから実行します。Docker Desktop の WSL Integration 側の daemon に接続すると、containerlab が作成した Linux bridge を WSL から参照できず deploy に失敗することがあります。
-
-```bash
-docker version
-containerlab deploy -t ixia-c-one-dut-test.yml
-containerlab inspect -t ixia-c-one-dut-test.yml
-docker ps
-```
-
-`docker version` の Server が意図した WSL ローカル Engine であることを確認してください。deploy はコンテナ・ネットワークと `clab-ixia-c-one-dut-test/` 以下の実行時ファイルを作成・更新します。このディレクトリの生成物は、検証レポートと `rate-sweep/` を除いて Git 管理対象から外しています。
-
-## トラフィック試験
-
-[tests/clab-device-endpoint.py](tests/clab-device-endpoint.py) は元の snappi 例をコピーしたものです。snappi と pytest を利用できる Python 環境から実行します。
-
-```bash
-python -m pytest -s tests/clab-device-endpoint.py
-```
-
-この試験は ixia-c に OTG 設定を投入し、512バイトの双方向 UDP を10秒間、各方向10%で送信します。既存の ixia-c 試験設定がある場合は上書きされるため、ほかの試験が動いていないことを確認してから実行してください。レート比較で実際に使用した補助スクリプトと注意点は [rate-sweep/README.md](clab-ixia-c-one-dut-test/rate-sweep/README.md) を参照してください。
-
-## 検証結果
-
-Docker 接続障害の復旧経緯、Tx/Rx、損失率、cEOS の InDiscards、Etba CPU の分析は [TEST_REPORT.md](clab-ixia-c-one-dut-test/TEST_REPORT.md) に記録しています。
+以前からルートにある別試験の topology と設定は、内容を確認して対応する `labs/` フォルダへ移すまでは Git 管理対象外です。

@@ -6,7 +6,7 @@ containerlab 上の ixia-c から cEOS を経由して双方向 UDP を送り、
 
 ## 対象構成
 
-参照した topology は `../ixia-c-one-dut-test.yml`、cEOS の起動設定は `../ceos.cfg`。設定ファイルは編集していない。
+参照した topology は `ixia-c-one-dut-test.yml`、cEOS の起動設定は `ceos.cfg`。設定ファイルは編集していない。
 
 ```text
 ixia-c eth1 (10.1.0.1/24) ── cEOS Ethernet1 (10.1.0.254/24)
@@ -22,7 +22,7 @@ ixia-c eth2 (10.2.0.1/24) ── cEOS Ethernet2 (10.2.0.254/24)
 
 ## Docker 接続障害と復旧
 
-当初は WSL ローカルの `dockerd` が稼働している一方、`/var/run/docker.sock` が Docker Desktop の WSL Integration ソケットにつながっていた。containerlab は Docker Desktop 側に `clab` ネットワークを作成したが、WSL 側から対応する Docker ネットワークに対応する bridge が見えず、deploy は `Link not found` で失敗した。この時点で検証コンテナは作成されなかった。
+当初は WSL ローカルの `dockerd` が稼働している一方、`/var/run/docker.sock` が Docker Desktop の WSL Integration ソケットにつながっていた。containerlab は Docker Desktop 側に `clab` ネットワークを作成したが、WSL 側から Docker ネットワークの bridge が見えず、deploy は `Link not found` で失敗した。この時点で検証コンテナは作成されなかった。
 
 Ubuntu の Docker Desktop WSL Integration を無効化した後、`docker.socket` と `dockerd` は active で LISTEN 表示もあったが、`/run/docker.sock` のパスが存在せず接続できなかった。ユーザーが `docker.socket` を再起動した後、ソケットが再作成され、`docker version` の Server は WSL ローカル Docker Engine **27.5.1** になった。その後、同じ topology の `containerlab deploy` は成功し、`containerlab inspect` と `docker ps` で両ノードの running を確認した。調査・試験の過程で `containerlab destroy` は実行していない。
 
@@ -33,7 +33,7 @@ Ubuntu の Docker Desktop WSL Integration を無効化した後、`docker.socket
 - `10.1.0.1:50000 → 10.2.0.1:50001`（ixia-c eth1 → cEOS → ixia-c eth2）
 - `10.2.0.1:50001 → 10.1.0.1:50000`（逆方向）
 
-各フローは固定512バイト、10秒。プロトコルを起動して ARP 解決を待ち、送信停止後に Tx/Rx frames を取得した。Loss は `(Tx − Rx) / Tx × 100`、Tx pps は `Tx / 10秒` で算出した。0.1〜5%の試験では各レートの開始前と終了後に cEOS `show interfaces counters discards` を読み、その差を InDiscards 増分とした。実際に使用した補助スクリプトを `rate-sweep/` に保存した。用途と制約は `rate-sweep/README.md` に記載している。
+各フローは固定512バイト、10秒。プロトコルを起動して ARP 解決を待ち、送信停止後に Tx/Rx frames を取得した。Loss は `(Tx − Rx) / Tx × 100`、Tx pps は `Tx / 10秒` で算出した。0.1〜5%の試験では各レートの開始前と終了後に cEOS `show interfaces counters discards` を読み、その差を InDiscards 増分とした。実際に使用した補助スクリプトを `tests/rate-sweep/` に保存した。用途と制約は `tests/rate-sweep/README.md` に記載している。
 
 ## 実測結果
 
